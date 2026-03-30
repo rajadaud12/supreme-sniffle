@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# WXT & Builds
+.output/
+.wxt/
+dist/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Common System Files
+.DS_Store
+Thumbs.db
+*.log
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
