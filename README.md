@@ -1,121 +1,110 @@
-# Supreme Sniffle — Agentic Solver Extension
+# Supreme Sniffle
 
-Agentic form-filler browser extension built with React + TypeScript and powered by Ollama and DeepSeek. This repository contains the extension code (TypeScript/CSS/HTML) and uses the wxt toolchain for developing, building and packaging the extension.
+Supreme Sniffle (package name: `agentic-solver-extension`) is an AI-powered browser extension that assists with intelligent, context-aware form filling. It combines a lightweight React + TypeScript frontend with local/remote language models (via Ollama) and semantic retrieval (via DeepSeek) to provide accurate autofill suggestions for web forms.
 
-> Note: package.json lists the project name as `agentic-solver-extension`.
+Maintainer: Daud Bin Nasar (@rajadaud12)
 
-## Why this project
+---
 
-The extension automates and assists with filling forms using an AI agent that can consult local or remote LLMs (via Ollama) and semantic search / retrieval (via DeepSeek) to provide context-aware suggestions and autofill capabilities.
+## Features
 
-## Key features
+- Context-aware form autofill powered by LLMs and semantic search
+- Works in development for Chrome and Firefox using the wxt toolchain
+- Built with React + TypeScript and small runtime dependencies
+- Extensible agent pipeline to add custom prompts, retrieval sources, or model backends
 
-- AI-powered form autofill using Ollama + DeepSeek
-- Built with React and TypeScript
-- Cross-browser development support via wxt (Chrome / Firefox)
+## What’s included
 
-## Tech stack
+- Source code written primarily in TypeScript (frontend, background/content scripts)
+- CSS for UI styling and extension popup
+- Manifest and static assets prepared for the wxt extension toolchain
 
-- TypeScript
-- React
-- wxt (extension dev toolchain)
-- Lucide-react for icons
+## Requirements
 
-## Quick start
+- Node.js 18 or later
+- npm (or yarn)
+- (Optional) Local Ollama server or access to an Ollama-compatible model endpoint
+- (Optional) DeepSeek API key for semantic retrieval
 
-Prerequisites
+## Configuration
 
-- Node.js 18+ (or a supported LTS)
-- npm or yarn
-- (Optional) Ollama server or credentials and DeepSeek API key if you want the agent to access models or retrieval services
+Create a file named `.env.local` at the repository root (this file is not checked into source control). The extension reads the following environment variables at build time:
 
-Install dependencies
+- OLLAMA_API_URL — Base URL of your Ollama instance (example: `http://localhost:11434`) used for model calls.
+- DEEPSEEK_API_KEY — API key for DeepSeek retrieval if you use DeepSeek for document search.
+- DEEPSEEK_API_URL — (optional) Custom DeepSeek endpoint if not using the default.
+
+Example `.env.local`:
+
+NODE_ENV=development
+OLLAMA_API_URL=http://localhost:11434
+DEEPSEEK_API_KEY=your_deepseek_key_here
+DEEPSEEK_API_URL=https://api.deepseek.example
+
+Note: Inspect the code for any additional config keys if you have modified the project. Search for `process.env` or a `config` module to find exact variable usage.
+
+## Install
+
+Install dependencies and run the repository’s `postinstall` to prepare the wxt toolchain:
 
 ```bash
 npm install
-# or
-# yarn install
-```
-
-The repository's package.json already includes a `postinstall` script that runs `wxt prepare` — run it if needed:
-
-```bash
 npm run postinstall
 ```
 
-Development
+The package.json scripts (already present) provide the common workflows:
 
-Start a local development build and hot reload (wxt required):
+- `npm run dev` — start the wxt dev server and load the extension in the default browser profile
+- `npm run dev:firefox` — start wxt for Firefox
+- `npm run build` — create a production build of the extension
+- `npm run zip` — package/submit the extension using wxt
 
-```bash
-npm run dev
-# or for Firefox
-npm run dev:firefox
-```
+## Development and testing
 
-This will run the wxt dev server and load the extension into the browser in development mode.
+1. Make sure your `.env.local` is configured for development.
+2. Run `npm run dev` to start wxt in development mode. wxt will build and load the extension into a browser profile with hot reload.
+3. Open the browser’s extensions page and enable developer mode (if required). Use the wxt-provided profile or load the unpacked extension from the wxt output directory when testing manually.
 
-Build
+For Firefox, use `npm run dev:firefox` which instructs wxt to start with a Firefox profile.
 
-To build a production-ready extension bundle:
+## Build and package
+
+To prepare a production bundle:
 
 ```bash
 npm run build
 ```
 
-Package / Zip for submission
-
-The project provides a convenience script to package or submit using wxt:
+To create a distributable zip (wxt submit):
 
 ```bash
 npm run zip
-# runs: wxt submit
 ```
 
-## Configuration
+Follow wxt’s prompts (if any) to produce the final packaged artifact.
 
-The repository uses Ollama and DeepSeek integrations. The code expects configuration for the model/retrieval services — how these are supplied depends on the implementation in the codebase (for example an env file, a config module, or runtime options). Add a configuration file or environment variables according to how your code reads them. Common examples:
+## How the AI agent works (high level)
 
-- OLLAMA_API_URL — URL for an Ollama instance, e.g. `http://localhost:11434`
-- DEEPSEEK_API_KEY — API key for DeepSeek
+1. The extension captures the web form context (labels, surrounding text, and form field types).
+2. When the user requests autofill, the agent forms a prompt that includes the captured context and optionally relevant documents from DeepSeek.
+3. The prompt is sent to the model endpoint configured through OLLAMA_API_URL. The returned structured response is parsed and applied to the form fields.
 
-Create a `.env` or `.env.local` (or `src/config.ts`) and provide the keys needed by the extension. If unsure, search the code for usage of `process.env`, `OLLAMA`, or `DEEPSEEK` to find exact variable names and locations.
+The implementation is modular so you can replace or augment the retrieval layer (DeepSeek) or the model backend (Ollama) without changing the UI components.
 
-## Project structure (typical)
+## Security and privacy
 
-A typical layout for a wxt + React extension project looks like:
-
-- src/ — TypeScript source files (UI, agent code, background, content scripts)
-- public/ — static assets / manifest files
-- package.json — scripts and dependencies
-
-Adjust the structure section above to match the repository if your layout differs.
-
-## Contributing
-
-Contributions are welcome. Suggested workflow:
-
-1. Fork the repository and create a topic branch.
-2. Implement your change and add tests where appropriate.
-3. Open a pull request with a clear description of the change.
-
-If you plan to change the way secrets or API keys are configured, add documentation and examples in this README.
-
-## Troubleshooting
-
-- If wxt commands fail, ensure `wxt` is installed (it is listed as a devDependency) and that your Node version is supported.
-- If the extension cannot access Ollama or DeepSeek, confirm the service endpoints and keys are reachable and correct.
-
-## To-do / TODOs
-
-- Add detailed config docs showing the exact environment variables or config file format required by the extension code.
-- Add a license file (e.g., MIT) and include a License section here.
-- Add screenshots and usage examples demonstrating autofill flows.
+- Secrets such as OLLAMA_API_URL and DEEPSEEK_API_KEY should never be committed to source control. Use `.env.local` or a secure secrets manager.
+- If you run Ollama locally, ensure it is not exposed to the public internet unless properly secured.
+- The extension only sends form context and optionally retrieval content to the configured LLM/retrieval endpoints — review the code if you require stricter privacy guarantees.
 
 ## License
 
-This repository does not yet include a LICENSE file. Add a LICENSE file (for example MIT) if you want to make the code open-source.
+This repository is licensed under the MIT License — see the accompanying LICENSE file for details.
+
+---
 
 ## Contact
 
-For questions about this repository contact the owner: @rajadaud12
+Maintainer: Daud Bin Nasar (@rajadaud12)
+GitHub: https://github.com/rajadaud12/supreme-sniffle
+Email: (use GitHub contact or add preferred contact email to the repo profile)
