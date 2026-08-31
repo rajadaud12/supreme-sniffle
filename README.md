@@ -107,4 +107,4 @@ This repository is licensed under the MIT License — see the accompanying LICEN
 
 Maintainer: Daud Bin Nasar (@rajadaud12)
 GitHub: https://github.com/rajadaud12/supreme-sniffle
-Email: (use GitHub contact or add preferred contact email to the repo profile)
+Email: daudnasar16@gmail.com
